@@ -14,6 +14,7 @@ import {
 import { DownloadOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons'
 import { CVData, defaultCVData, CVProject } from '@/data/cv-maker.data'
 import { downloadCV } from '@/utils/cv-generator'
+import CVPreview from './CVPreview'
 
 const { Title, Text } = Typography
 const { TextArea } = Input
@@ -88,8 +89,9 @@ export default function CVMakerForm() {
     }
   }
 
-  const handleFinish = (values: any) => {
-    const data: CVData = {
+  // Transform form values to CVData format
+  const transformFormValuesToCVData = (values: any): CVData => {
+    return {
       personalInfo: {
         name: values.name || '',
         phone: values.phone || '',
@@ -131,6 +133,22 @@ export default function CVMakerForm() {
         others: values.others ? values.others.split(',').map((s: string) => s.trim()) : [],
       },
     }
+  }
+
+  // Auto-save on form change and update preview
+  const handleValuesChange = () => {
+    if (!isLoaded || !isClient) return
+    
+    const currentValues = form.getFieldsValue()
+    const transformedData: CVData = transformFormValuesToCVData(currentValues)
+    
+    setCvData(transformedData)
+    saveToLocalStorage(transformedData)
+  }
+
+  const handleFinish = (values: any) => {
+    const data = transformFormValuesToCVData(values)
+    
     setCvData(data)
     
     // Save to localStorage
@@ -138,57 +156,6 @@ export default function CVMakerForm() {
     
     // Download CV
     downloadCV(data, `${values.name || 'cv'}.md`)
-  }
-
-  // Auto-save on form change (optional, debounced)
-  const handleValuesChange = () => {
-    if (!isLoaded || !isClient) return
-    
-    const currentValues = form.getFieldsValue()
-    const transformedData: CVData = {
-      personalInfo: {
-        name: currentValues.name || '',
-        phone: currentValues.phone || '',
-        email: currentValues.email || '',
-        linkedin: currentValues.linkedin || '',
-      },
-      profile: currentValues.profile || '',
-      projects: (currentValues.projects || []).map((project: any) => ({
-        ...project,
-        achievements: project.achievements 
-          ? (typeof project.achievements === 'string' 
-              ? project.achievements.split('\n').filter((line: string) => line.trim())
-              : Array.isArray(project.achievements) 
-                ? project.achievements 
-                : [])
-          : [],
-      })),
-      education: {
-        degree: currentValues.degree || '',
-        institution: currentValues.institution || '',
-        period: currentValues.educationPeriod || '',
-        location: currentValues.educationLocation || '',
-      },
-      organization: {
-        name: currentValues.orgName || '',
-        institution: currentValues.orgInstitution || '',
-        period: currentValues.orgPeriod || '',
-        activities: currentValues.orgActivities 
-          ? (typeof currentValues.orgActivities === 'string' 
-              ? currentValues.orgActivities.split('\n').filter((line: string) => line.trim())
-              : Array.isArray(currentValues.orgActivities) 
-                ? currentValues.orgActivities 
-                : [])
-          : [],
-      },
-      skills: {
-        programming: currentValues.programming ? currentValues.programming.split(',').map((s: string) => s.trim()) : [],
-        database: currentValues.database ? currentValues.database.split(',').map((s: string) => s.trim()) : [],
-        others: currentValues.others ? currentValues.others.split(',').map((s: string) => s.trim()) : [],
-      },
-    }
-    
-    saveToLocalStorage(transformedData)
   }
 
   // Prevent hydration mismatch by not rendering form until client-side
@@ -213,7 +180,7 @@ export default function CVMakerForm() {
   }
 
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="max-w-[1800px] mx-auto">
       <div className="mb-8 fade-in">
         <Title level={1} className="!m-0 text-white text-4xl md:text-3xl font-bold mb-4">
           CV Maker
@@ -223,8 +190,15 @@ export default function CVMakerForm() {
         </Title>
       </div>
 
-      <Card className="rounded-[20px] p-8 md:p-6 glass">
-        <Form
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Preview - Left Side */}
+        <div className="lg:sticky lg:top-24 order-2 lg:order-1">
+          <CVPreview cvData={cvData} />
+        </div>
+
+        {/* Input Form - Right Side */}
+        <Card className="rounded-[20px] p-8 md:p-6 glass order-1 lg:order-2">
+          <Form
           form={form}
           layout="vertical"
           onFinish={handleFinish}
@@ -553,7 +527,8 @@ export default function CVMakerForm() {
             </Button>
           </div>
         </Form>
-      </Card>
+        </Card>
+      </div>
     </div>
   )
 }
