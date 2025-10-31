@@ -1,24 +1,43 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Card, Typography, Form, Button } from 'antd'
 import { DownloadOutlined } from '@ant-design/icons'
 import { useCVStorage } from '@/hooks/useCVStorage'
 import { transformFormValuesToCVData, transformCVDataToFormValues } from '@/utils/cv-form-transformer'
 import { downloadCV } from '@/utils/cv-generator'
-import CVPreview from './CVPreview'
+import DraggableCVPreview from './DraggableCVPreview'
 import PersonalInfoSection from './form-sections/PersonalInfoSection'
 import ProfileSection from './form-sections/ProfileSection'
 import ProjectsSection from './form-sections/ProjectsSection'
 import EducationSection from './form-sections/EducationSection'
 import OrganizationSection from './form-sections/OrganizationSection'
 import SkillsSection from './form-sections/SkillsSection'
+import { SectionId, SECTION_CONFIGS } from '@/utils/cv-section-order'
 
 const { Title, Text } = Typography
 
+// Map section ID to component
+const sectionComponents: Record<SectionId, React.ReactNode> = {
+  profile: <ProfileSection />,
+  projects: <ProjectsSection />,
+  education: <EducationSection />,
+  organization: <OrganizationSection />,
+  skills: <SkillsSection />,
+}
+
 export default function CVMakerForm() {
   const [form] = Form.useForm()
-  const { cvData, setCvData, saveToLocalStorage, isLoaded, isClient } = useCVStorage()
+  const {
+    cvData,
+    setCvData,
+    saveToLocalStorage,
+    sectionOrder,
+    setSectionOrder,
+    saveSectionOrder,
+    isLoaded,
+    isClient,
+  } = useCVStorage()
 
   // Load saved data into form on mount
   useEffect(() => {
@@ -44,8 +63,18 @@ export default function CVMakerForm() {
 
     setCvData(data)
     saveToLocalStorage(data)
-    downloadCV(data, `${values.name || 'cv'}.md`)
+    downloadCV(data, `${values.name || 'cv'}.md`, sectionOrder)
   }
+
+  const handleSectionOrderChange = (newOrder: SectionId[]) => {
+    setSectionOrder(newOrder)
+    saveSectionOrder(newOrder)
+  }
+
+  // Render form sections in order
+  const orderedFormSections = useMemo(() => {
+    return sectionOrder.map((sectionId) => sectionComponents[sectionId])
+  }, [sectionOrder])
 
   // Prevent hydration mismatch by not rendering form until client-side
   if (!isClient) {
@@ -82,7 +111,11 @@ export default function CVMakerForm() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Preview - Left Side */}
         <div className="lg:sticky lg:top-24 order-2 lg:order-1">
-          <CVPreview cvData={cvData} />
+          <DraggableCVPreview
+            cvData={cvData}
+            sectionOrder={sectionOrder}
+            onSectionOrderChange={handleSectionOrderChange}
+          />
         </div>
 
         {/* Input Form - Right Side */}
@@ -95,11 +128,7 @@ export default function CVMakerForm() {
             className="space-y-6"
           >
             <PersonalInfoSection />
-            <ProfileSection />
-            <ProjectsSection />
-            <EducationSection />
-            <OrganizationSection />
-            <SkillsSection />
+            {orderedFormSections}
 
             {/* Submit Button */}
             <div className="flex justify-center mt-8">
