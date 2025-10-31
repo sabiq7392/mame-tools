@@ -36,6 +36,7 @@ export interface ProjectData {
   company: string
   period: string
   description: string
+  image?: string
   tags: ProjectTag[]
   badge?: {
     label: string
@@ -115,6 +116,7 @@ export const homeData: HomeData = {
       company: 'PT. Quantum Teknologi Nusantara',
       period: 'Jan 2022 - Now',
       description: 'Web-based certification system for training providers, streamlining application, payment, and certification issuance processes.',
+      image: '/projects/bsmr.svg',
       tags: [
         { label: 'Docker' },
         { label: 'Elasticsearch' },
@@ -127,6 +129,7 @@ export const homeData: HomeData = {
       company: 'PT. Quantum Teknologi Nusantara',
       period: 'Jan 2022 - Now',
       description: 'Comprehensive mobile application for the public to access Indonesian National Police services, including SKCK, SIM, STNK, DUMAS, eSurvey, E-Tilang, SP2HP.',
+      image: '/projects/presisi.webp',
       tags: [
         { label: 'Flutter' },
         { label: 'Dynamic Form Builder' },
@@ -143,6 +146,7 @@ export const homeData: HomeData = {
       company: 'PT. Quantum Teknologi Nusantara',
       period: 'Jan 2022 - Now',
       description: 'Web-based monitoring system for police patrol tracking, enabling officers to monitor outgoing patrols, track assigned special operations, analyze real-time movement and reports.',
+      image: '/projects/patroli-perintis.png',
       tags: [
         { label: 'Google Maps API' },
         { label: 'Real-time Tracking' },
@@ -155,6 +159,7 @@ export const homeData: HomeData = {
       company: 'PT. Quantum Teknologi Nusantara',
       period: 'Jan 2022 - Now',
       description: 'Unique e-commerce platform for seamless gift-giving. Enables sending gifts without needing recipient addresses, shopping for various products, and creating celebration videos.',
+      image: '/projects/kenangan.svg',
       tags: [
         { label: 'E-Commerce' },
         { label: 'Drag & Drop Editor' },

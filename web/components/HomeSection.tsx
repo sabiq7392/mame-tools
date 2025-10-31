@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { Card, Typography, Space, Button, Avatar, Divider, Tag } from 'antd'
 import { 
   LinkedinOutlined, 
@@ -136,9 +137,9 @@ export default function HomeSection() {
                   key={index}
                   className="p-8 rounded-2xl glass-soft hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-blue/20 transition-all text-center flex flex-col items-center"
                 >
-                  <div className="w-16 h-16 rounded-full bg-primary-blue/20 border border-primary-blue/50 flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-full bg-primary-blue/20 border border-primary-blue/50 flex items-center justify-center mb-4">
                     {iconMap[skill.icon] && (
-                      <span className="text-3xl text-primary-blue-light">
+                      <span className="text-xl text-primary-blue-light">
                         {React.createElement(iconMap[skill.icon])}
                       </span>
                     )}
@@ -164,12 +165,28 @@ export default function HomeSection() {
                   key={index}
                   className="p-6 rounded-2xl glass-soft hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-blue/20 transition-all flex flex-col"
                 >
+                  {project.image && (
+                    <div className="mb-4 w-full flex items-center justify-start">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        width={200}
+                        height={120}
+                        className="object-contain max-h-24"
+                      />
+                    </div>
+                  )}
                   <div className="mb-3">
                     <div className="flex items-start justify-between mb-2">
                       <Title level={4} className="!m-0 text-white text-xl">{project.title}</Title>
                       {project.badge && (
                         <Tag color="green" className="bg-green-500/20 border-green-500/50 text-green-400 flex-shrink-0 ml-2">
-                          {iconMap[project.badge.icon] && React.createElement(iconMap[project.badge.icon])} {project.badge.label}
+                          {iconMap[project.badge.icon] && (
+                            <span className="text-xs mr-1">
+                              {React.createElement(iconMap[project.badge.icon])}
+                            </span>
+                          )}
+                          {project.badge.label}
                         </Tag>
                       )}
                     </div>
