@@ -8,8 +8,8 @@ import StyledComponentsRegistry from '@/lib/AntdRegistry'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Sabiq Muhammad Antebing Mame',
-  description: 'Personal website and portfolio',
+  title: 'Sabiq Muhammad Antebing Mame | Full-Stack Developer',
+  description: 'Full-Stack Developer with expertise in website and backend development. Specializing in building efficient, scalable, and well-structured systems. Currently working at PT. Quantum Teknologi Nusantara.',
 }
 
 export default function RootLayout({
