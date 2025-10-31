@@ -24,9 +24,17 @@ export default function CVMakerForm() {
   const [form] = Form.useForm()
   const [cvData, setCvData] = useState<CVData>(defaultCVData)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isClient, setIsClient] = useState(false)
 
-  // Load data from localStorage on mount
+  // Ensure this only runs on client
   useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Load data from localStorage on mount (only on client)
+  useEffect(() => {
+    if (!isClient) return
+
     const savedData = localStorage.getItem(STORAGE_KEY)
     if (savedData) {
       try {
@@ -67,10 +75,12 @@ export default function CVMakerForm() {
       }
     }
     setIsLoaded(true)
-  }, [form])
+  }, [form, isClient])
 
-  // Save data to localStorage
+  // Save data to localStorage (only on client)
   const saveToLocalStorage = (data: CVData) => {
+    if (!isClient) return
+    
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
     } catch (error) {
@@ -132,7 +142,7 @@ export default function CVMakerForm() {
 
   // Auto-save on form change (optional, debounced)
   const handleValuesChange = () => {
-    if (!isLoaded) return
+    if (!isLoaded || !isClient) return
     
     const currentValues = form.getFieldsValue()
     const transformedData: CVData = {
@@ -181,6 +191,27 @@ export default function CVMakerForm() {
     saveToLocalStorage(transformedData)
   }
 
+  // Prevent hydration mismatch by not rendering form until client-side
+  if (!isClient) {
+    return (
+      <div className="max-w-[1200px] mx-auto">
+        <div className="mb-8 fade-in">
+          <Title level={1} className="!m-0 text-white text-4xl md:text-3xl font-bold mb-4">
+            CV Maker
+          </Title>
+          <Title level={4} className="!m-0 text-white/60 text-lg md:text-base font-normal">
+            Create and customize your professional CV easily
+          </Title>
+        </div>
+        <Card className="rounded-[20px] p-8 md:p-6 glass">
+          <div className="flex justify-center items-center py-20">
+            <Text className="text-white/60">Loading...</Text>
+          </div>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-[1200px] mx-auto">
       <div className="mb-8 fade-in">
@@ -212,7 +243,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="Sabiq Muhammad Antebing Mame"
                 />
               </Form.Item>
@@ -222,7 +253,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="(+62) 85691550726"
                 />
               </Form.Item>
@@ -233,7 +264,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="sabiqmuhammad98@gmail.com"
                 />
               </Form.Item>
@@ -243,7 +274,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="https://www.linkedin.com/in/your-profile"
                 />
               </Form.Item>
@@ -260,7 +291,7 @@ export default function CVMakerForm() {
             >
               <TextArea
                 rows={5}
-                className="bg-white/5 border-white/20 text-white"
+                className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                 placeholder="Full-Stack Developer with expertise in website and backend development..."
               />
             </Form.Item>
@@ -294,7 +325,7 @@ export default function CVMakerForm() {
                           label={<Text className="text-white/80">Project Title</Text>}
                         >
                           <Input 
-                            className="bg-white/5 border-white/20 text-white"
+                            className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                             placeholder="BSMR (Badan Sertifikasi Manajemen Risiko)"
                           />
                         </Form.Item>
@@ -304,7 +335,7 @@ export default function CVMakerForm() {
                           label={<Text className="text-white/80">Company</Text>}
                         >
                           <Input 
-                            className="bg-white/5 border-white/20 text-white"
+                            className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                             placeholder="PT. Quantum Teknologi Nusantara"
                           />
                         </Form.Item>
@@ -315,7 +346,7 @@ export default function CVMakerForm() {
                           className="md:col-span-2"
                         >
                           <Input 
-                            className="bg-white/5 border-white/20 text-white"
+                            className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                             placeholder="Jan 2022 - Now"
                           />
                         </Form.Item>
@@ -327,7 +358,7 @@ export default function CVMakerForm() {
                         >
                           <TextArea
                             rows={3}
-                            className="bg-white/5 border-white/20 text-white"
+                            className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                             placeholder="Web-based certification system for training providers..."
                           />
                         </Form.Item>
@@ -352,7 +383,7 @@ export default function CVMakerForm() {
                           className="md:col-span-2"
                         >
                           <Input 
-                            className="bg-white/5 border-white/20 text-white"
+                            className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                             placeholder="Available on: App Store & Play Store"
                           />
                         </Form.Item>
@@ -384,7 +415,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="Bachelor of Computer Science"
                 />
               </Form.Item>
@@ -394,7 +425,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="Sekolah Tinggi Teknologi Terpadu Nurul Fikri"
                 />
               </Form.Item>
@@ -404,7 +435,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="Sept 2020 – Sept 2024"
                 />
               </Form.Item>
@@ -414,7 +445,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="Jakarta, Indonesia"
                 />
               </Form.Item>
@@ -432,7 +463,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="Google Developer Student Club (GDSC)"
                 />
               </Form.Item>
@@ -442,7 +473,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="STT Terpadu Nurul Fikri"
                 />
               </Form.Item>
@@ -453,7 +484,7 @@ export default function CVMakerForm() {
               >
                 <Input 
                   size="large" 
-                  className="bg-white/5 border-white/20 text-white"
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="Dec 2022 – Aug 2023"
                 />
               </Form.Item>
@@ -481,31 +512,31 @@ export default function CVMakerForm() {
               name="programming"
               label={<Text className="text-white/80">Programming Languages (comma separated)</Text>}
             >
-              <Input 
-                size="large" 
-                className="bg-white/5 border-white/20 text-white"
-                placeholder="TypeScript, Flutter, Python, NextJS, ReactJS, VueJS, ExpressJS, NestJS"
-              />
+                <Input 
+                  size="large" 
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                  placeholder="TypeScript, Flutter, Python, NextJS, ReactJS, VueJS, ExpressJS, NestJS"
+                />
             </Form.Item>
             <Form.Item
               name="database"
               label={<Text className="text-white/80">Database (comma separated)</Text>}
             >
-              <Input 
-                size="large" 
-                className="bg-white/5 border-white/20 text-white"
-                placeholder="MySQL, Elasticsearch"
-              />
+                <Input 
+                  size="large" 
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                  placeholder="MySQL, Elasticsearch"
+                />
             </Form.Item>
             <Form.Item
               name="others"
               label={<Text className="text-white/80">Others (comma separated)</Text>}
             >
-              <Input 
-                size="large" 
-                className="bg-white/5 border-white/20 text-white"
-                placeholder="Docker, AWS, GitHub, Figma"
-              />
+                <Input 
+                  size="large" 
+                  className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                  placeholder="Docker, AWS, GitHub, Figma"
+                />
             </Form.Item>
           </div>
 
