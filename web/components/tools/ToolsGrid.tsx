@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, Typography } from 'antd'
-import { ImageOutlined, FileTextOutlined } from '@ant-design/icons'
+import { FileTextOutlined, FileImageOutlined } from '@ant-design/icons'
 
 const { Title } = Typography
 
@@ -18,7 +18,7 @@ const tools: Tool[] = [
     id: 'convert-image',
     name: 'Convert Image',
     description: 'Convert and optimize your images between different formats',
-    icon: <ImageOutlined />,
+    icon: <FileImageOutlined />,
   },
   {
     id: 'cv-maker',
