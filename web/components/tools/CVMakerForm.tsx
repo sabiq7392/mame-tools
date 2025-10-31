@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Card, 
   Typography, 
@@ -18,9 +18,65 @@ import { downloadCV } from '@/utils/cv-generator'
 const { Title, Text } = Typography
 const { TextArea } = Input
 
+const STORAGE_KEY = 'cv-maker-data'
+
 export default function CVMakerForm() {
   const [form] = Form.useForm()
   const [cvData, setCvData] = useState<CVData>(defaultCVData)
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY)
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData)
+        
+        // Transform saved data back to form format
+        const formData: any = {
+          name: parsedData.personalInfo?.name || '',
+          phone: parsedData.personalInfo?.phone || '',
+          email: parsedData.personalInfo?.email || '',
+          linkedin: parsedData.personalInfo?.linkedin || '',
+          profile: parsedData.profile || '',
+          projects: parsedData.projects?.map((project: any) => ({
+            ...project,
+            achievements: Array.isArray(project.achievements) 
+              ? project.achievements.join('\n')
+              : project.achievements || ''
+          })) || [],
+          degree: parsedData.education?.degree || '',
+          institution: parsedData.education?.institution || '',
+          educationPeriod: parsedData.education?.period || '',
+          educationLocation: parsedData.education?.location || '',
+          orgName: parsedData.organization?.name || '',
+          orgInstitution: parsedData.organization?.institution || '',
+          orgPeriod: parsedData.organization?.period || '',
+          orgActivities: Array.isArray(parsedData.organization?.activities)
+            ? parsedData.organization.activities.join('\n')
+            : parsedData.organization?.activities || '',
+          programming: parsedData.skills?.programming?.join(', ') || '',
+          database: parsedData.skills?.database?.join(', ') || '',
+          others: parsedData.skills?.others?.join(', ') || '',
+        }
+        
+        form.setFieldsValue(formData)
+        setCvData(parsedData)
+      } catch (error) {
+        console.error('Error loading saved CV data:', error)
+      }
+    }
+    setIsLoaded(true)
+  }, [form])
+
+  // Save data to localStorage
+  const saveToLocalStorage = (data: CVData) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+    } catch (error) {
+      console.error('Error saving CV data to localStorage:', error)
+    }
+  }
 
   const handleFinish = (values: any) => {
     const data: CVData = {
@@ -66,7 +122,63 @@ export default function CVMakerForm() {
       },
     }
     setCvData(data)
+    
+    // Save to localStorage
+    saveToLocalStorage(data)
+    
+    // Download CV
     downloadCV(data, `${values.name || 'cv'}.md`)
+  }
+
+  // Auto-save on form change (optional, debounced)
+  const handleValuesChange = () => {
+    if (!isLoaded) return
+    
+    const currentValues = form.getFieldsValue()
+    const transformedData: CVData = {
+      personalInfo: {
+        name: currentValues.name || '',
+        phone: currentValues.phone || '',
+        email: currentValues.email || '',
+        linkedin: currentValues.linkedin || '',
+      },
+      profile: currentValues.profile || '',
+      projects: (currentValues.projects || []).map((project: any) => ({
+        ...project,
+        achievements: project.achievements 
+          ? (typeof project.achievements === 'string' 
+              ? project.achievements.split('\n').filter((line: string) => line.trim())
+              : Array.isArray(project.achievements) 
+                ? project.achievements 
+                : [])
+          : [],
+      })),
+      education: {
+        degree: currentValues.degree || '',
+        institution: currentValues.institution || '',
+        period: currentValues.educationPeriod || '',
+        location: currentValues.educationLocation || '',
+      },
+      organization: {
+        name: currentValues.orgName || '',
+        institution: currentValues.orgInstitution || '',
+        period: currentValues.orgPeriod || '',
+        activities: currentValues.orgActivities 
+          ? (typeof currentValues.orgActivities === 'string' 
+              ? currentValues.orgActivities.split('\n').filter((line: string) => line.trim())
+              : Array.isArray(currentValues.orgActivities) 
+                ? currentValues.orgActivities 
+                : [])
+          : [],
+      },
+      skills: {
+        programming: currentValues.programming ? currentValues.programming.split(',').map((s: string) => s.trim()) : [],
+        database: currentValues.database ? currentValues.database.split(',').map((s: string) => s.trim()) : [],
+        others: currentValues.others ? currentValues.others.split(',').map((s: string) => s.trim()) : [],
+      },
+    }
+    
+    saveToLocalStorage(transformedData)
   }
 
   return (
@@ -85,6 +197,7 @@ export default function CVMakerForm() {
           form={form}
           layout="vertical"
           onFinish={handleFinish}
+          onValuesChange={handleValuesChange}
           className="space-y-6"
         >
           {/* Personal Information */}
