@@ -8,6 +8,7 @@ export interface HeroData {
   phone: string
   social: {
     linkedin: string
+    github: string
     email: string
     phone: string
   }
@@ -72,12 +73,13 @@ export const homeData: HomeData = {
     name: 'Sabiq Muhammad Antebing Mame',
     title: 'Full-Stack Developer',
     description: 'Full-Stack Developer with expertise in website and backend development, specializing in building efficient, scalable, and well-structured systems. Skilled in database management, ensuring data integrity, and maintaining strict validation. Proficient in optimizing system performance and implementing seamless user experiences.',
-    avatar: '/assets/logo.svg',
-    cvUrl: '/assets/Sabiq Muhammad Antebing Mame - CV.pdf',
+    avatar: '/me/me.jpg',
+    cvUrl: '/me/cv.pdf',
     email: 'sabiqmuhammad98@gmail.com',
     phone: '(+62) 85691550726',
     social: {
       linkedin: 'https://www.linkedin.com/in/sabiq-muhammad-6b314a210/',
+      github: 'https://github.com/sabiq7392',
       email: 'mailto:sabiqmuhammad98@gmail.com',
       phone: 'tel:+6285691550726',
     },

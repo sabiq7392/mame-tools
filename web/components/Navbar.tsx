@@ -28,11 +28,11 @@ export default function Navbar() {
           <div className="flex items-center justify-between gap-6">
             {/* Logo Section */}
             <div className="flex items-center gap-3 flex-shrink-0">
-              <div className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center">
+              <div className="w-10 h-10 md:w-9 md:h-9 flex items-center justify-center rounded-full overflow-hidden bg-white/10 border border-white/20">
                 <img 
-                  src="/assets/logo.svg" 
+                  src="/me/logo.svg" 
                   alt="Logo" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                 />
               </div>
               <span className="text-lg md:text-base font-semibold text-white hidden sm:block">
