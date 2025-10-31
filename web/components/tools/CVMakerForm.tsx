@@ -17,13 +17,13 @@ import { SectionId, SECTION_CONFIGS } from '@/utils/cv-section-order'
 
 const { Title, Text } = Typography
 
-// Map section ID to component
-const sectionComponents: Record<SectionId, React.ReactNode> = {
-  profile: <ProfileSection />,
-  projects: <ProjectsSection />,
-  education: <EducationSection />,
-  organization: <OrganizationSection />,
-  skills: <SkillsSection />,
+// Map section ID to component factory
+const sectionComponents: Record<SectionId, () => React.ReactNode> = {
+  profile: () => <ProfileSection />,
+  projects: () => <ProjectsSection />,
+  education: () => <EducationSection />,
+  organization: () => <OrganizationSection />,
+  skills: () => <SkillsSection />,
 }
 
 export default function CVMakerForm() {
@@ -73,7 +73,11 @@ export default function CVMakerForm() {
 
   // Render form sections in order
   const orderedFormSections = useMemo(() => {
-    return sectionOrder.map((sectionId) => sectionComponents[sectionId])
+    return sectionOrder.map((sectionId) => (
+      <div key={sectionId}>
+        {sectionComponents[sectionId]()}
+      </div>
+    ))
   }, [sectionOrder])
 
   // Prevent hydration mismatch by not rendering form until client-side
