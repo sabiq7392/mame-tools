@@ -2,6 +2,7 @@
 
 import { Card, Typography } from 'antd'
 import { FileTextOutlined, FileImageOutlined } from '@ant-design/icons'
+import Link from 'next/link'
 
 const { Title } = Typography
 
@@ -25,6 +26,7 @@ const tools: Tool[] = [
     name: 'CV Maker',
     description: 'Create and customize your professional CV easily',
     icon: <FileTextOutlined />,
+    href: '/tools/cv-maker',
   },
 ]
 
@@ -42,16 +44,10 @@ export default function ToolsGrid() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
         {tools.map((tool) => (
-          <Card
-            key={tool.id}
-            className="rounded-2xl glass hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-blue/20 transition-all cursor-pointer group"
-            onClick={() => {
-              // Handle navigation when route is ready
-              if (tool.href) {
-                window.location.href = tool.href
-              }
-            }}
-          >
+          <Link key={tool.id} href={tool.href || '#'}>
+            <Card
+              className="rounded-2xl glass hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-blue/20 transition-all cursor-pointer group h-full"
+            >
             <div className="flex flex-col items-center text-center p-6">
               <div className="w-20 h-20 rounded-full bg-primary-blue/20 border border-primary-blue/50 flex items-center justify-center mb-4 group-hover:bg-primary-blue/30 group-hover:border-primary-blue transition-all">
                 <span className="text-4xl text-primary-blue-light">
@@ -66,6 +62,7 @@ export default function ToolsGrid() {
               </p>
             </div>
           </Card>
+          </Link>
         ))}
       </div>
     </div>
