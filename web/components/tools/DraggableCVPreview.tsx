@@ -63,7 +63,7 @@ function SortableSection({ id, children }: SortableSectionProps) {
       <div
         {...attributes}
         {...listeners}
-        className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-grab active:cursor-grabbing"
+        className="flex items-start gap-3 p-3 rounded-lg border-2 border-transparent hover:border-dashed hover:border-gray-400 hover:bg-gray-50 transition-all cursor-grab active:cursor-grabbing"
       >
         <div className="flex-shrink-0 mt-1 p-2 rounded bg-gray-200 hover:bg-gray-300 transition-colors">
           <HolderOutlined className="text-gray-600 text-base" />
