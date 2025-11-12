@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, Typography } from 'antd'
-import { FileTextOutlined, FileImageOutlined } from '@ant-design/icons'
+import { FileTextOutlined, FileImageOutlined, DiffOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 
 const { Title } = Typography
@@ -28,16 +28,23 @@ const tools: Tool[] = [
     icon: <FileTextOutlined />,
     href: '/tools/cv-maker',
   },
+  {
+    id: 'json-diff',
+    name: 'JSON Diff',
+    description: 'Compare and find differences between two JSON objects',
+    icon: <DiffOutlined />,
+    href: '/tools/json-diff',
+  },
 ]
 
 export default function ToolsGrid() {
   return (
     <div className="max-w-[1200px] mx-auto">
       <div className="mb-8 fade-in">
-        <Title level={1} className="!m-0 text-white text-4xl md:text-3xl font-bold mb-4">
+        <Title level={1} className="!m-0 text-gray-900 dark:text-white text-4xl md:text-3xl font-bold mb-4">
           My Tools
         </Title>
-        <Title level={4} className="!m-0 text-white/60 text-lg md:text-base font-normal">
+        <Title level={4} className="!m-0 text-gray-600 dark:text-white/60 text-lg md:text-base font-normal">
           Useful tools to help you with your daily tasks
         </Title>
       </div>
@@ -54,10 +61,10 @@ export default function ToolsGrid() {
                   {tool.icon}
                 </span>
               </div>
-              <Title level={3} className="!m-0 !mb-2 text-white text-2xl font-semibold">
+              <Title level={3} className="!m-0 !mb-2 text-gray-900 dark:text-white text-2xl font-semibold">
                 {tool.name}
               </Title>
-              <p className="text-white/70 text-base leading-relaxed mb-0">
+              <p className="text-gray-600 dark:text-white/70 text-base leading-relaxed mb-0">
                 {tool.description}
               </p>
             </div>
