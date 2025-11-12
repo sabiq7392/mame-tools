@@ -11,12 +11,12 @@ export default function AboutSection() {
   return (
     <section className="w-full fade-in">
       <Card className="rounded-[20px] p-8 md:p-6 glass">
-        <Title level={2} className="!m-0 text-white text-3xl md:text-2xl font-semibold">About Me</Title>
-        <Divider className="!border-white/10 !my-6" />
+        <Title level={2} className="!m-0 text-gray-900 dark:text-white text-3xl md:text-2xl font-semibold">About Me</Title>
+        <Divider className="!border-gray-200 dark:!border-white/10 !my-6" />
         {about.paragraphs.map((paragraph, index) => (
           <div
             key={index}
-            className="text-white/80 text-lg md:text-base leading-relaxed mb-4 last:mb-0"
+            className="text-gray-700 dark:text-white/80 text-lg md:text-base leading-relaxed mb-4 last:mb-0"
             dangerouslySetInnerHTML={{ __html: paragraph }}
           />
         ))}

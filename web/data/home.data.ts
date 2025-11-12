@@ -38,6 +38,7 @@ export interface ProjectData {
   period: string
   description: string
   image?: string
+  image_light?: string
   tags: ProjectTag[]
   badge?: {
     label: string
@@ -119,6 +120,7 @@ export const homeData: HomeData = {
       period: 'Jan 2022 - Now',
       description: 'Web-based certification system for training providers, streamlining application, payment, and certification issuance processes.',
       image: '/projects/bsmr.svg',
+      image_light: '/projects/bsmr-light.svg',
       tags: [
         { label: 'Docker' },
         { label: 'Elasticsearch' },
@@ -162,6 +164,7 @@ export const homeData: HomeData = {
       period: 'Jan 2022 - Now',
       description: 'Unique e-commerce platform for seamless gift-giving. Enables sending gifts without needing recipient addresses, shopping for various products, and creating celebration videos.',
       image: '/projects/kenangan.svg',
+      image_light: '/projects/kenangan-light.svg',
       tags: [
         { label: 'E-Commerce' },
         { label: 'Drag & Drop Editor' },
