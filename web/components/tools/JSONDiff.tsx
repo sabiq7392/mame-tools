@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { Card, Typography, Input, Button, Space, Alert, Tabs } from 'antd'
 import { SwapOutlined, ClearOutlined, CopyOutlined } from '@ant-design/icons'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const { Title, Text } = Typography
 const { TextArea } = Input
@@ -15,6 +18,7 @@ interface DiffResult {
 }
 
 export default function JSONDiff() {
+  const { theme } = useTheme()
   const [json1, setJson1] = useState('')
   const [json2, setJson2] = useState('')
   const [diffResult, setDiffResult] = useState<DiffResult | null>(null)
@@ -126,6 +130,96 @@ export default function JSONDiff() {
       setter(formatted)
     } catch (e: any) {
       setError(`Invalid JSON: ${e.message}`)
+    }
+  }
+
+  const highlightJSONWithDiff = (jsonString: string, diffResult: DiffResult, type: 'json1' | 'json2') => {
+    try {
+      const lines = jsonString.split('\n')
+      const highlightedLines: JSX.Element[] = []
+
+      // Create a map of paths to check
+      const pathsToCheck = type === 'json1' 
+        ? [...diffResult.removed, ...diffResult.modified]
+        : [...diffResult.added, ...diffResult.modified]
+
+      lines.forEach((line, lineIndex) => {
+        let bgColor = ''
+        let lineClass = ''
+        let borderColor = ''
+
+        // Check if this line contains any diff paths
+        const checkPath = (path: string): boolean => {
+          // Extract the key from path (last part)
+          const pathParts = path.split('.')
+          const key = pathParts[pathParts.length - 1]
+          
+          // Check if line contains the key with quotes
+          const keyPattern = new RegExp(`"${key}"\\s*:`, 'g')
+          return keyPattern.test(line)
+        }
+
+        const hasDiff = pathsToCheck.some(path => checkPath(path))
+        
+        if (hasDiff) {
+          const isRemoved = type === 'json1' && diffResult.removed.some(path => checkPath(path))
+          const isAdded = type === 'json2' && diffResult.added.some(path => checkPath(path))
+          const isModified = diffResult.modified.some(path => checkPath(path))
+
+          if (isRemoved) {
+            bgColor = 'bg-red-500/20 dark:bg-red-500/20'
+            lineClass = 'text-red-700 dark:text-red-300'
+            borderColor = 'border-l-red-500'
+          } else if (isAdded) {
+            bgColor = 'bg-green-500/20 dark:bg-green-500/20'
+            lineClass = 'text-green-700 dark:text-green-300'
+            borderColor = 'border-l-green-500'
+          } else if (isModified) {
+            bgColor = 'bg-yellow-500/20 dark:bg-yellow-500/20'
+            lineClass = 'text-yellow-700 dark:text-yellow-300'
+            borderColor = 'border-l-yellow-500'
+          }
+        }
+
+        highlightedLines.push(
+          <div
+            key={lineIndex}
+            className={`${bgColor} ${lineClass} px-1 py-0.5 rounded min-h-[1.5rem] ${hasDiff ? `border-l-2 ${borderColor}` : ''}`}
+          >
+            <SyntaxHighlighter
+              language="json"
+              style={theme === 'dark' ? vscDarkPlus : vs}
+              customStyle={{
+                margin: 0,
+                padding: 0,
+                background: 'transparent',
+                fontSize: '0.875rem',
+                lineHeight: '1.5',
+              }}
+              PreTag="span"
+            >
+              {line || ' '}
+            </SyntaxHighlighter>
+          </div>
+        )
+      })
+
+      return <div className="space-y-0 font-mono">{highlightedLines}</div>
+    } catch {
+      return (
+        <SyntaxHighlighter
+          language="json"
+          style={theme === 'dark' ? vscDarkPlus : vs}
+          customStyle={{
+            margin: 0,
+            padding: 0,
+            fontSize: '0.875rem',
+            lineHeight: '1.5',
+          }}
+        >
+          {jsonString}
+        </SyntaxHighlighter>
+      )
     }
   }
 
@@ -256,8 +350,75 @@ export default function JSONDiff() {
           </Title>
 
           <Tabs
-            defaultActiveKey="summary"
+            defaultActiveKey="side-by-side"
             items={[
+              {
+                key: 'side-by-side',
+                label: 'Side by Side',
+                children: (
+                  <div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      {/* JSON 1 Side */}
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <Title level={5} className="!m-0 text-gray-900 dark:text-white">
+                            JSON 1
+                          </Title>
+                          <Button
+                            size="small"
+                            icon={<CopyOutlined />}
+                            onClick={() => copyToClipboard(formattedJson1)}
+                          >
+                            Copy
+                          </Button>
+                        </div>
+                        <div className="rounded-xl overflow-hidden p-4 bg-gray-50 dark:bg-dark-bg-secondary max-h-[600px] overflow-y-auto">
+                          {highlightJSONWithDiff(formattedJson1 || '{}', diffResult, 'json1')}
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                          <span className="inline-block mr-4">
+                            <span className="inline-block w-3 h-3 rounded bg-red-500/20 dark:bg-red-500/20 mr-1"></span>
+                            Removed
+                          </span>
+                          <span className="inline-block mr-4">
+                            <span className="inline-block w-3 h-3 rounded bg-yellow-500/20 dark:bg-yellow-500/20 mr-1"></span>
+                            Modified
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* JSON 2 Side */}
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <Title level={5} className="!m-0 text-gray-900 dark:text-white">
+                            JSON 2
+                          </Title>
+                          <Button
+                            size="small"
+                            icon={<CopyOutlined />}
+                            onClick={() => copyToClipboard(formattedJson2)}
+                          >
+                            Copy
+                          </Button>
+                        </div>
+                        <div className="rounded-xl overflow-hidden p-4 bg-gray-50 dark:bg-dark-bg-secondary max-h-[600px] overflow-y-auto">
+                          {highlightJSONWithDiff(formattedJson2 || '{}', diffResult, 'json2')}
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                          <span className="inline-block mr-4">
+                            <span className="inline-block w-3 h-3 rounded bg-green-500/20 dark:bg-green-500/20 mr-1"></span>
+                            Added
+                          </span>
+                          <span className="inline-block mr-4">
+                            <span className="inline-block w-3 h-3 rounded bg-yellow-500/20 dark:bg-yellow-500/20 mr-1"></span>
+                            Modified
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ),
+              },
               {
                 key: 'summary',
                 label: 'Summary',
@@ -355,9 +516,19 @@ export default function JSONDiff() {
                         Copy
                       </Button>
                     </div>
-                    <pre className="p-4 rounded-xl bg-gray-50 dark:bg-dark-bg-secondary overflow-auto text-sm font-mono text-gray-900 dark:text-gray-300">
-                      {formattedJson1 || 'No JSON to display'}
-                    </pre>
+                    <div className="rounded-xl overflow-hidden p-4 bg-gray-50 dark:bg-dark-bg-secondary">
+                      {highlightJSONWithDiff(formattedJson1 || '{}', diffResult, 'json1')}
+                    </div>
+                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      <span className="inline-block mr-4">
+                        <span className="inline-block w-3 h-3 rounded bg-red-500/20 dark:bg-red-500/20 mr-1"></span>
+                        Removed
+                      </span>
+                      <span className="inline-block mr-4">
+                        <span className="inline-block w-3 h-3 rounded bg-yellow-500/20 dark:bg-yellow-500/20 mr-1"></span>
+                        Modified
+                      </span>
+                    </div>
                   </div>
                 ),
               },
@@ -375,9 +546,19 @@ export default function JSONDiff() {
                         Copy
                       </Button>
                     </div>
-                    <pre className="p-4 rounded-xl bg-gray-50 dark:bg-dark-bg-secondary overflow-auto text-sm font-mono text-gray-900 dark:text-gray-300">
-                      {formattedJson2 || 'No JSON to display'}
-                    </pre>
+                    <div className="rounded-xl overflow-hidden p-4 bg-gray-50 dark:bg-dark-bg-secondary">
+                      {highlightJSONWithDiff(formattedJson2 || '{}', diffResult, 'json2')}
+                    </div>
+                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      <span className="inline-block mr-4">
+                        <span className="inline-block w-3 h-3 rounded bg-green-500/20 dark:bg-green-500/20 mr-1"></span>
+                        Added
+                      </span>
+                      <span className="inline-block mr-4">
+                        <span className="inline-block w-3 h-3 rounded bg-yellow-500/20 dark:bg-yellow-500/20 mr-1"></span>
+                        Modified
+                      </span>
+                    </div>
                   </div>
                 ),
               },
