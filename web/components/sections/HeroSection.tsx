@@ -85,23 +85,23 @@ export default function HeroSection() {
           >
             <MailOutlined />
           </a>
-          <a
+          {/* <a
             href={hero.social.phone}
             className="text-2xl text-gray-600 dark:text-white/80 hover:text-primary-blue-light hover:scale-110 transition-all"
             title="Phone"
           >
             <PhoneOutlined />
-          </a>
+          </a> */}
         </Space>
 
-        <div className="mt-4 flex flex-wrap gap-2 justify-center">
+        {/* <div className="mt-4 flex flex-wrap gap-2 justify-center">
           <Tag color="blue" className="text-sm px-3 py-1 border-primary-blue/50 bg-primary-blue/10 text-primary-blue-light">
             <PhoneOutlined /> {hero.phone}
           </Tag>
           <Tag color="blue" className="text-sm px-3 py-1 border-primary-blue/50 bg-primary-blue/10 text-primary-blue-light">
             <MailOutlined /> {hero.email}
           </Tag>
-        </div>
+        </div> */}
       </div>
     </section>
   )

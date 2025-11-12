@@ -15,19 +15,19 @@ interface Tool {
 }
 
 const tools: Tool[] = [
-  {
-    id: 'convert-image',
-    name: 'Convert Image',
-    description: 'Convert and optimize your images between different formats',
-    icon: <FileImageOutlined />,
-  },
-  {
-    id: 'cv-maker',
-    name: 'CV Maker',
-    description: 'Create and customize your professional CV easily',
-    icon: <FileTextOutlined />,
-    href: '/tools/cv-maker',
-  },
+  // {
+  //   id: 'convert-image',
+  //   name: 'Convert Image',
+  //   description: 'Convert and optimize your images between different formats',
+  //   icon: <FileImageOutlined />,
+  // },
+  // {
+  //   id: 'cv-maker',
+  //   name: 'CV Maker',
+  //   description: 'Create and customize your professional CV easily',
+  //   icon: <FileTextOutlined />,
+  //   href: '/tools/cv-maker',
+  // },
   {
     id: 'json-diff',
     name: 'JSON Diff',
@@ -49,7 +49,7 @@ export default function ToolsGrid() {
         </Title>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
         {tools.map((tool) => (
           <Link key={tool.id} href={tool.href || '#'}>
             <Card
