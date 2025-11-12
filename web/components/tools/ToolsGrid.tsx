@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, Typography } from 'antd'
-import { FileTextOutlined, FileImageOutlined, DiffOutlined } from '@ant-design/icons'
+import { FileTextOutlined, FileImageOutlined, DiffOutlined, CodeOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 
 const { Title } = Typography
@@ -34,6 +34,13 @@ const tools: Tool[] = [
     description: 'Compare and find differences between two JSON objects',
     icon: <DiffOutlined />,
     href: '/tools/json-diff',
+  },
+  {
+    id: 'json-beautifier',
+    name: 'JSON Beautifier',
+    description: 'Format and beautify your JSON with syntax highlighting',
+    icon: <CodeOutlined />,
+    href: '/tools/json-beautifier',
   },
 ]
 
